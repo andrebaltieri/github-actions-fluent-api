@@ -13,8 +13,15 @@ namespace ActionsBuilder
                 .Configure()
                 .WithName("My workflow name")
                 .OnBranch("main")
+                .WithJob("Build and deploy", new()
+                {
+                    Key = "MyEnvVar",
+                    Value = "MyValue"
+                })
                 .RunsOn("ubuntu-latest")
                 .AddStep("Setup .NET", "actions/setup-dotnet@v1")
+                .AddStep("","")
+                .AddStep("", "")
                 .Build();
         }
     }
