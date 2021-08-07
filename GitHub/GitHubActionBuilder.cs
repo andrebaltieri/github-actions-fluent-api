@@ -1,4 +1,6 @@
-﻿namespace ActionsBuilder.GitHub
+﻿using System;
+
+namespace ActionsBuilder.GitHub
 {
     public class GitHubActionBuilder :
         IWorkflow,
@@ -7,6 +9,7 @@
         IJobName,
         IRunsOn,
         IStep,
+        IStepWith,
         IBuild
     {
         private GitHubActionBuilder()
@@ -28,12 +31,12 @@
             return this;
         }
 
-        IJobName IBranchName.WithJob(string name, EnvironmentConfiguration env)
+        IJobName IBranchName.WithJob(string name, Action<KeyValue> env)
         {
             return this;
         }
 
-        public IRunsOn WithJob(string name, EnvironmentConfiguration env = null)
+        public IRunsOn WithJob(string name, Action<KeyValue> env = null)
         {
             return this;
         }
@@ -48,12 +51,22 @@
             return this;
         }
 
-        public IBuild Build()
+        public IStepWith With(Action<KeyValue> config)
+        {
+            return this;
+        }
+
+        public IBuild Build(string fileName = "workflow.yml")
         {
             return this;
         }
 
         IStep IStep.AddStep(string name, string run)
+        {
+            return this;
+        }
+
+        public IStep AddStep(string name, string run)
         {
             return this;
         }
@@ -71,12 +84,12 @@
 
     public interface IBranchName
     {
-        public IJobName WithJob(string name, EnvironmentConfiguration env = null);
+        public IJobName WithJob(string name, Action<KeyValue> env = null);
     }
 
     public interface IJobName
     {
-        public IRunsOn WithJob(string name, EnvironmentConfiguration env = null);
+        public IRunsOn WithJob(string name, Action<KeyValue> env = null);
         public IRunsOn RunsOn(string name);
     }
 
@@ -88,14 +101,20 @@
     public interface IStep
     {
         public IStep AddStep(string name, string run);
-        public IBuild Build();
+        public IStepWith With(Action<KeyValue> config);
+        public IBuild Build(string fileName = "workflow.yml");
+    }
+
+    public interface IStepWith
+    {
+        public IStep AddStep(string name, string run);
     }
 
     public interface IBuild
     {
     }
 
-    public class EnvironmentConfiguration
+    public class KeyValue
     {
         public string Key { get; set; }
         public string Value { get; set; }

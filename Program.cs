@@ -7,22 +7,25 @@ namespace ActionsBuilder
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
             var workflow = GitHubActionBuilder
                 .Configure()
                 .WithName("My workflow name")
                 .OnBranch("main")
-                .WithJob("Build and deploy", new()
+                .WithJob("Build and deploy", x =>
                 {
-                    Key = "MyEnvVar",
-                    Value = "MyValue"
+                    x.Key = "MyEnvVar";
+                    x.Value = "MyValue";
                 })
                 .RunsOn("ubuntu-latest")
                 .AddStep("Setup .NET", "actions/setup-dotnet@v1")
-                .AddStep("","")
-                .AddStep("", "")
-                .Build();
+                    .With(x =>
+                    {
+                        x.Key = "dotnet-version";
+                        x.Value = "5.0.x";
+                    })
+                .AddStep("Add GitHub Packages Source", "dotnet nuget add source ...")
+                .AddStep("Build with dotnet", "dotnet build ...")
+                .Build("main-workflow.yml");
         }
     }
 }
